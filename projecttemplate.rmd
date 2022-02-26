@@ -1,0 +1,321 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+Data Analysis with R - Wine Quality White by Michelle_Beckner
+========================================================
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Load_the_Data}
+wqw <- read.csv("wineQualityWhites.csv")
+```
+
+The dataset I choose to examine is white wine quality. White wine samples from 
+variants of the Portuguese "Vinho Verde" wine were evaluated by wine experts. 
+The dataset consists of 11 inputs and one output. The inputs are the following:
+
+   1 - fixed acidity
+   2 - volatile acidity 
+   3 - citric acid 
+   4 - residual sugar
+   5 - chlorides 
+   6 - free sulfur dioxide 
+   7 - total sulfur dioxide 
+   8 - density
+   9 - pH
+   10 - sulfates 
+   11 - alcohol 
+   
+There was 1 output. The output was quality as measured with a score from 1 t0 10 
+by the wine experts.
+
+  P. Cortez, A. Cerdeira, F. Almeida, T. Matos and J. Reis. 
+  Modeling wine preferences by data mining from physicochemical properties.
+  In Decision Support Systems, Elsevier, 47(4):547-553. ISSN: 0167-9236.
+
+  Available at: [@Elsevier] http://dx.doi.org/10.1016/j.dss.2009.05.016
+                [Pre-press (pdf)] http://www3.dsi.uminho.pt/pcortez/
+                winequality09.pdf
+                [bib] http://www3.dsi.uminho.pt/pcortez/dss09.bib
+
+
+Univariate Plots Section   
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots}
+class(wqw)
+```
+The data is organized into a data frame. 
+                
+```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots2}
+dim(wqw)
+```
+The data frame has 4898 rows and 13 columns.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots3}
+str(wqw)
+```
+
+The above chart summarizes what I already found out with the data is in a data 
+frame, has 4898 rows and 13 columns. I also see the column names and that the 
+columns are made up of integers and numeric (decimals). 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots4}
+head(wqw)
+```
+
+The first row consists of column names. Each row represents the information for 
+one sample of white wine.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots5}
+
+library(gridExtra)
+library(ggplot2)
+
+grid.arrange(qplot(x=residual.sugar, data = wqw, xlim =c(0, 21),
+      ylab = 'Number of Samples',
+      xlab = 'Residual Sugar'),
+qplot(x=fixed.acidity, data = wqw, xlim =c(4, 11),
+      ylab = 'Number of Samples',
+      xlab = 'Fixed Acidity'),
+qplot(x=volatile.acidity, data = wqw,
+      ylab = 'Number of Samples',
+      xlab = 'Volatile Acidity'),
+qplot(x=citric.acid, data = wqw, xlim =c(0, 0.95),
+      ylab = 'Number of Samples',
+      xlab = 'Citric Acid'),
+qplot(x=free.sulfur.dioxide, data = wqw, xlim =c(0, 110),
+      ylab = 'Number of Samples',
+      xlab = 'Free Sulfur Dioxide'),
+qplot(x=total.sulfur.dioxide, data = wqw, xlim =c(0, 275),
+      ylab = 'Number of Samples',
+      xlab = 'Total Sulfur Dioxide'),
+qplot(x=density, data = wqw, xlim =c(0.985, 1.002),
+      ylab = 'Number of Samples',
+      xlab = 'Density'),
+qplot(x=pH, data = wqw,
+      ylab = 'Number of Samples',
+      xlab = 'pH'),
+qplot(x=sulphates, data = wqw,
+      ylab = 'Number of Samples',
+      xlab = 'Sulphates'),
+qplot(x=alcohol, data = wqw,
+      ylab = 'Number of Samples',
+      xlab = 'Alcohol'),
+qplot(x=quality, data = wqw,
+      ylab = 'Number of Samples',
+      xlab = 'Quality'))
+```
+
+
+The above charts show the how many samples use how much of each variable. The 
+quality variable is the one that most resembles a standard distribution with 
+most of the samples receiving the middle ratings. The residual sugar graph I 
+found interesting with it being highly left skewed followed by a long tail. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots6}
+qplot(x=residual.sugar, data = wqw, xlim =c(0, 25),
+      ylab = 'Number of Samples',
+      xlab = 'Residual Sugar')+
+    facet_wrap(~quality)
+```
+
+I was curious of the residual sugar was differently skewed between the different 
+quality ratings. The above charts show the residual sugar broken out by the 
+different quality ratings. For the most part, it appears that for the middle 
+ratings, it keeps the trend of being left skewed. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots7}
+qplot(x=alcohol, data = wqw, xlim =c(7, 14),
+      ylab = 'Number of Samples',
+      xlab = 'Alcohol')+
+    facet_wrap(~quality)
+```
+
+The above charts show the alcohol content broken out by the different quality
+ratings. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots8}
+ggplot(data = wqw, aes(x = quality))+
+    geom_histogram(binwidth = 1)+
+    scale_x_continuous(breaks = seq(1, 10, 1))+
+    theme_set(theme_minimal(12))+
+    labs(x = "Quality Rating",  y = "Number of Samples")
+```
+
+The wine quality was rated from 1 - 10 with the rating of 6 being given the 
+most. There was no sample that received a 1 or a 10 rating.
+
+```{r echo=FALSE, Univariate_Plots9}
+table(wqw$quality)
+```
+
+The above table shows how many samples were rated in each quality category.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots10}
+qplot(x=alcohol, y=density, data = wqw, geom = 'boxplot')
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots11}
+qplot(x=alcohol, y=residual.sugar, data = wqw, geom = 'boxplot')
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots12}
+qplot(x=residual.sugar, y=density, data = wqw, geom = 'boxplot')
+```
+
+The above 3 box charts just shows some more relationships between the 3
+variables that I have been looking at: alcohol, density and residual sugar.
+
+# Bivariate Plots Section
+
+I want to see if there is correlation between alcohol content and density.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Bivariate_Plots1}
+qplot(x = alcohol, y = density, data = wqw)
+```
+
+From the above chart, it shows that the lower the alcohol content is the lower 
+the higher the density.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Bivariate_Plots2}
+qplot(x = quality, y = density, data = wqw)
+```
+
+This chart appears to show the the higher quality scores have lower density. 
+Although I do not think this is the best chart type to reflect that. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Bivariate_Plots3}
+cor.test(wqw$alcohol, wqw$density, method = "pearson")
+```
+
+The pearson score of 0.78 shows there is a significant correlation between
+alcohol and density. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Bivariate_Plots4}
+ggplot(aes(x = alcohol, y = quality), data = wqw) +
+    geom_point(alpha = 0.05,
+             position = position_jitter(h=0),
+             colour = "green") +
+    geom_line(stat = "summary", fun.y = mean)
+```
+
+The above graph shows quality compared to alcohol content. The mean is also
+represented. It appears that the higher the alcohol content the higher rating 
+the wine sample tended to receive. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Bivariate_Plots5}
+cor.test(wqw$alcohol, wqw$quality, method = "pearson")
+```
+
+The pearson score of 0.43 shows there is a correlation between
+alcohol and quality. However, it's not a real strong one. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Bivariate_Plots6}
+ggplot(aes(x = residual.sugar, y = quality), data = wqw) +
+  xlim(0, 20) +
+  geom_point(alpha = 0.05,
+             position = position_jitter(h=0),
+             colour = "green") +
+    geom_line(stat = "summary", fun.y = mean)
+```
+
+The above chart shows a quality ratings with the residual sugar content of the 
+samples. It appears that there is a small correlation between the amount of 
+residual sugar and the quality ratings of the samples. I will do a pearson test
+to see if this is correct.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Bivariate_Plots7}
+cor.test(wqw$residual.sugar, wqw$quality, method = "pearson")
+```
+
+With a -0.98 pearson correlation, it validates our throughts that there is not
+really a correlation between residual sugar and quality ratings.
+
+# Multivariate Plots Section
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Multivariate_Plots}
+ggplot(data = wqw,
+      aes(y = density, x = alcohol,
+           color = quality)) +
+      ylim(0.985, 1.002) +
+    geom_point(alpha = 0.9, size = 3) 
+```
+
+The above chart shows the density and alcohol comparison by adding the quality
+rating as well. The brighter the color, the higher the quality rating. This
+shows that the higher alcohol content not only has the lower density but 
+higher rating. This shows what we have been seeing that the higher the 
+alcohol content, the lower the density and the higher the quality rating.
+
+# Final Plots and Summary
+
+### Plot One
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_One}
+ggplot(aes(x = alcohol, y = density), data = wqw) +
+    ylim(0.985, 1.002) +
+    geom_point(alpha = 0.05,
+             position = position_jitter(h=0),
+             colour = "green") +
+    geom_line(stat = "summary", fun.y = mean) +
+    xlab("Alcohol") +
+    ylab("Density") +
+    ggtitle("Relationship Between the Density and Alcohol Variables")
+```
+
+### Description One
+
+The above chart shows the density variable compared to the alcohol variable 
+that was explored above. The density mean was added for extra clarification.
+The chart further shows that the higher the density the lower the alcohol
+content. 
+
+
+### Plot Two
+```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_Two}
+ggplot(aes(x = alcohol, y = quality), data = wqw) +
+    geom_point(alpha = 0.05,
+             position = position_jitter(h=0),
+             colour = "purple") +
+    geom_line(stat = "summary", fun.y = mean) +
+    xlab("Alcohol") +
+    ylab("Quality") +
+    ggtitle("Relationship Between the Quality Rating and Alcohol Variable")
+```
+
+The above graph shows quality compared to alcohol content. The mean is also
+represented. It appears that the higher the alcohol content the higher rating 
+the wine sample tended to receive. 
+
+### Plot Three
+```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_Three}
+ggplot(data = wqw,
+      aes(y = density, x = alcohol,
+           color = quality)) +
+      ylim(0.985, 1.002) +
+    geom_point(alpha = 0.9, size = 3) +
+    xlab("Alcohol") +
+    ylab("Density") +
+    ggtitle("Relationship Between the Quality Rating and the Alcohol and Density 
+            Variables")
+```
+
+The above brings all three factors together - alcohol content, density and 
+quality rating. The brighter the color, the higher the quality rating. This
+shows that the higher alcohol content not only has the lower density but 
+higher rating. This shows what we have been seeing that the higher the 
+alcohol content, the lower the density and the higher the quality rating.
+------
+
+# Reflection
+
+This was an interesting look at wine and the different variables that go into
+different wines. It wasn't a surprise that the higher the alcohol content
+corresponded with the higher quality ratings. What did surprise me was that 
+the residual sugar had no real impact on the quality ratings. I also was
+not expecting the density to play a factor. However, these charts show that the
+higher rated wines had lower density.
+
+#Resources
+
+N/A. 
